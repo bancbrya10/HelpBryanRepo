@@ -5,6 +5,7 @@
 
 package edu.temple.mobiledevgroupproject.UI;
 
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.location.Address;
@@ -47,6 +48,7 @@ public class FormFragment extends Fragment {
     Button startButton;
     Button endButton;
     Button confirmButton;
+    ProgressDialog progressDialog;
 
     //other objects
     FormInterface formInterfaceListener;
@@ -99,6 +101,7 @@ public class FormFragment extends Fragment {
         startButton = mView.findViewById(R.id.start_button);
         endButton = mView.findViewById(R.id.end_button);
         confirmButton = mView.findViewById(R.id.confirm_button_f);
+        progressDialog = new ProgressDialog(getContext());
 
         Calendar cal = Calendar.getInstance();
         //android encodes jan. as 0 and dec. as 11

@@ -6,8 +6,10 @@
 
 package edu.temple.mobiledevgroupproject.UI;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import edu.temple.mobiledevgroupproject.Objects.RequestHandler;
 import edu.temple.mobiledevgroupproject.Objects.SimpleDate;
 import edu.temple.mobiledevgroupproject.Objects.User;
 import edu.temple.mobiledevgroupproject.R;
@@ -30,6 +46,7 @@ public class SignUpFragment extends Fragment {
     EditText monthField;
     EditText dayField;
     EditText yearField;
+    ProgressDialog progressDialog;
 
     SignUpInterface signUpListener;
     View view;
@@ -67,6 +84,7 @@ public class SignUpFragment extends Fragment {
         monthField = view.findViewById(R.id.month_et_sign);
         dayField = view.findViewById(R.id.day_et_sign);
         yearField = view.findViewById(R.id.year_et_sign);
+        progressDialog = new ProgressDialog(getContext());
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +108,8 @@ public class SignUpFragment extends Fragment {
                             .setCurrentEnrolledJobs(null)
                             .setCurrentPostedJobs(null)
                             .setUserRating(User.DEFAULT_RATING);
+
+                    registerUser(newUser);
 
                     Toast.makeText(getContext(), R.string.signup_success, Toast.LENGTH_SHORT).show();
                     //pass signup data to parent activity
@@ -133,9 +153,46 @@ public class SignUpFragment extends Fragment {
             return false;
         }
 
-
         return false;
     }
 
+    private void registerUser(final User user){
+        final String birthday = "" + user.getUserBirthDay().getYear() + "-" + user.getUserBirthDay().getMonth()+ "-" + user.getUserBirthDay().getDay();
+        progressDialog.setMessage("Registering new user...");
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                "http://169.254.117.93/volunteer_app/v1/registerUser.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        progressDialog.hide();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            Toast.makeText(getContext(),jsonObject.toString(),Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progressDialog.hide();
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("name",user.getName());
+                params.put("userClass",user.getUserName());
+                params.put("password",user.getPassword());
+                params.put("birthday",birthday);
+                params.put("rating","" + user.getUserRating());
+                return params;
+            }
+        };
+        RequestHandler.getInstance(getContext()).addToRequestQueue(stringRequest);
+    }
     //TODO CHECK FOR INVALID BIRTHDATE
 }

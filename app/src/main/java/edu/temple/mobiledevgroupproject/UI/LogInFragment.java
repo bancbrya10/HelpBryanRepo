@@ -6,6 +6,7 @@
 
 package edu.temple.mobiledevgroupproject.UI;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -28,6 +29,7 @@ public class LogInFragment extends Fragment {
     Button confirmButton;
     CheckBox rememberMeBox;
     TextView newTextView;
+    ProgressDialog progressDialog;
 
     LogInInterface logInListener;
     View view;
@@ -64,6 +66,7 @@ public class LogInFragment extends Fragment {
         confirmButton = view.findViewById(R.id.confirm_button_log);
         rememberMeBox = view.findViewById(R.id.checkbox_log);
         newTextView = view.findViewById(R.id.new_text_view);
+        progressDialog = new ProgressDialog(getContext());
 
         newTextView.setOnClickListener(new View.OnClickListener() {
             @Override
