@@ -192,6 +192,8 @@ public class FormFragment extends Fragment {
                             .setUser(thisUser)
                             .setCommentList(commentList);
 
+                    registerJob(newJob);
+
                     System.out.println("******************************");
                     System.out.println("******************************");
                     System.out.println(newJob.toJSONObject().toString());
