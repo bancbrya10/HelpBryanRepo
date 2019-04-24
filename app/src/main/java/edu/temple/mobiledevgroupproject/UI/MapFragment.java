@@ -8,6 +8,8 @@ package edu.temple.mobiledevgroupproject.UI;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -99,20 +102,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
      */
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Job selectedJob = null;
-        for (int i = 0; i < jobsToDisplay.size(); i++) {
-            Job thisJob = jobsToDisplay.get(i);
-            if (marker.getTitle().equals(thisJob.getJobTitle())) {
-                selectedJob = thisJob;
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Job selectedJob = null;
+                for (int i = 0; i < jobsToDisplay.size(); i++) {
+                    Job thisJob = jobsToDisplay.get(i);
+                    if (marker.getTitle().equals(thisJob.getJobTitle())) {
+                        selectedJob = thisJob;
+                    }
+                }
+                if (selectedJob != null) {
+                    mapClickListener.jobSelected(selectedJob);
+                }
             }
-        }
-
-        if (selectedJob != null) {
-            mapClickListener.jobSelected(selectedJob);
-        }
-
+        });
         return false;
     }
+
+
 
     /**
      * Sets markers on the fragment's mapview using the location fields of the
@@ -134,10 +142,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 .build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPos));
         //add user pos. as marker
+        String iconName = getResources().getResourceName(R.drawable.icons8_user_24);
+
         googleMap.addMarker(new MarkerOptions()
                 .position(userPos)
                 .title("USER POSITION")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeIcons(iconName, 60, 60))));
+
+        iconName = getResources().getResourceName(R.drawable.marker_icon);
 
         if (jobsToDisplay != null) {
             for (int i = 0; i < jobsToDisplay.size(); i++) {
@@ -145,8 +157,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 googleMap.addMarker(new MarkerOptions()
                         .position(thisJob.getLocation())
                         .title(thisJob.getJobTitle())
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                        .snippet(thisJob.getJobDescription())
+                        .icon(BitmapDescriptorFactory.fromBitmap(resizeIcons(iconName, 80, 80))))
+                        .setAlpha(1);
             }
         }
+    }
+
+    private Bitmap resizeIcons(String iconName, int width, int height) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(iconName, "drawable", getContext().getPackageName()));
+        return Bitmap.createScaledBitmap(bitmap, width, height, false);
     }
 }

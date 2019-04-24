@@ -4,6 +4,7 @@
 
 package edu.temple.mobiledevgroupproject.UI;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -69,7 +70,11 @@ public class ProfileFragment extends Fragment {
             currentlyEnrolledView.setText(getJobCount(userToDisplay.getCurrentEnrolledJobs()) + " " + opportunityString);
             previouslyEnrolledView.setText(getJobCount(userToDisplay.getPreviousJobs()) + " " + opportunityString);
 
-            //TODO set profile image
+            String profImgString = User.fetchProfImg(getContext().getFilesDir());
+            if (profImgString != null) {
+                Bitmap profImgBitmap = User.decodeToBitmap(profImgString);
+                profileImgView.setImageBitmap(profImgBitmap);
+            }
         }
 
         return mView;

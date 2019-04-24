@@ -35,6 +35,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     public void onBindViewHolder(@NonNull CommentAdapter.ViewHolder viewHolder, int i) {
         Comment thisComment = commentList.get(viewHolder.getAdapterPosition());
 
+
         viewHolder.userTextView.setText(thisComment.getUser().getUserName());
         viewHolder.commentBodyTextView.setText(thisComment.getCommentText());
         String month = String.valueOf(thisComment.getDatePosted().getMonth());

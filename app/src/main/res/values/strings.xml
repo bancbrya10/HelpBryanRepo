@@ -56,4 +56,7 @@
     <string name="click_to_comment">View this Opportunity\'s comments.</string>
     <string name="sign_up_for_job">Sign up for this Opportunity</string>
     <string name="comment_posted">Comment successfully posted</string>
+    <string name="click_to_select">Click to select a profile image.</string>
+    <string name="profile_img_selected">Profile image successfully selected.</string>
+    <string name="take_me">Take me to this Opportunity</string>
 </resources>

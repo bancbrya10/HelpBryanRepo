@@ -53,7 +53,7 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
             thisUser = (User) recIntent.getParcelableExtra("this_user");
         }
 
-        thisUser = new User()
+        /*thisUser = new User()
         .setUserName("JerryGarcia1995");
 
         jobToDisplay = new Job();
@@ -65,7 +65,7 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
                 .setEndTime(new SimpleTime(4, 45, SimpleTime.POST_MERIDIEM))
                 .setLocation(new LatLng(41.044089, -75.301557))
                 .setUser(thisUser)
-                .setCommentList(new Record<Comment>("comment record", Record.COMMENT_RECORD));
+                .setCommentList(new Record<Comment>("comment record", Record.COMMENT_RECORD));*/
 
         jobTitleView = findViewById(R.id.job_title_view);
         jobDescView = findViewById(R.id.job_desc_view);

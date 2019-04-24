@@ -14,10 +14,11 @@
         android:src="@drawable/icons8_user_24" />
 
     <TextView
+        android:id="@+id/nav_user"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="DUMMY TEXT"
         android:gravity="center_vertical|center_horizontal"
-        android:textColor="@color/textOnPrimary"/>
+        android:text="DUMMY TEXT"
+        android:textColor="@color/textOnPrimary" />
 
 </LinearLayout>
