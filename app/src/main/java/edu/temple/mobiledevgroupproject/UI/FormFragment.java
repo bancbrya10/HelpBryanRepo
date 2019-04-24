@@ -22,15 +22,26 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.maps.model.LatLng;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.temple.mobiledevgroupproject.Objects.Comment;
 import edu.temple.mobiledevgroupproject.Objects.Job;
 import edu.temple.mobiledevgroupproject.Objects.Record;
+import edu.temple.mobiledevgroupproject.Objects.RequestHandler;
 import edu.temple.mobiledevgroupproject.Objects.SimpleDate;
 import edu.temple.mobiledevgroupproject.Objects.SimpleTime;
 import edu.temple.mobiledevgroupproject.Objects.User;
@@ -326,5 +337,47 @@ public class FormFragment extends Fragment {
         sb.append(" ");
         sb.append(time.getTimePeriod());
         return sb.toString();
+    }
+
+    private void registerJob(final Job job){
+        progressDialog.setMessage("Registering new job...");
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                "http://169.254.117.93/volunteer_app/v1/registerJob.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        progressDialog.hide();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            Toast.makeText(getContext(),jsonObject.toString(),Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progressDialog.hide();
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("jobTitle",job.getJobTitle());
+                params.put("jobDescription",job.getJobDescription());
+                params.put("datePosted",job.getDatePosted().toString());
+                params.put("dateOfJob",job.getDateOfJob().toString());
+                params.put("startTime",job.getStartTime().toString());
+                params.put("endTime",job.getEndTime().toString());
+                params.put("latitude",String.valueOf(job.getLocation().latitude));
+                params.put("longitude",String.valueOf(job.getLocation().longitude));
+                params.put("postedBy",job.getUser().getUserName());
+                return params;
+            }
+        };
+        RequestHandler.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
 }
