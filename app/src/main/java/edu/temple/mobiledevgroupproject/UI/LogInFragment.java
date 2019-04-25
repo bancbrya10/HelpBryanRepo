@@ -30,8 +30,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import edu.temple.mobiledevgroupproject.Objects.RequestHandler;
+import edu.temple.mobiledevgroupproject.Objects.SharedPrefManager;
 import edu.temple.mobiledevgroupproject.Objects.User;
 import edu.temple.mobiledevgroupproject.R;
 
@@ -145,7 +147,17 @@ public class LogInFragment extends Fragment {
                         progressDialog.hide();
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            Toast.makeText(getContext(),jsonObject.toString(),Toast.LENGTH_LONG).show();
+                            if(!jsonObject.getBoolean("error")){
+                                SharedPrefManager.getInstance(getContext()).userLogin(jsonObject.getInt("id"),
+                                        jsonObject.getString("name"), jsonObject.getString("userName"),
+                                        jsonObject.getString("birthday"), jsonObject.getString("previousJobs"),
+                                        jsonObject.getString("currentEnrolledJobs"), jsonObject.getString("currentPostedJobs"),
+                                        jsonObject.getDouble("rating"));
+                                Toast.makeText(getContext(),"User login successful",Toast.LENGTH_LONG).show();
+                            }
+                            else{
+                                Toast.makeText(getContext(),jsonObject.getString("message"),Toast.LENGTH_LONG).show();
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
