@@ -206,4 +206,11 @@ public class Job implements Parcelable {
         }
         return jsonObject;
     }
+
+    @Override
+    public String toString() {
+        return "Title: " + getJobTitle() + "\nDescription: " + getJobDescription() + "\nDate Posted:" + getDatePosted().toString() +
+                "\nDate Of Job: " + getDateOfJob().toString() + "\nStart Time: " + getStartTime().toString() + "\nEnd Time: " + getEndTime().toString() +
+                "\nLatitude: " + getLocation().latitude + "\nLongitude: " + getLocation().longitude;
+    }
 }

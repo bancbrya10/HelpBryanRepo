@@ -19,6 +19,17 @@ public class SimpleTime implements Serializable {
         this.timePeriod = timePeriod;
     }
 
+    public SimpleTime(String timeStr){
+        this.hours = Integer.valueOf(timeStr.substring(0,2));
+        this.minutes = Integer.valueOf(timeStr.substring(3,5));
+        if(timeStr.contains("a") || timeStr.contains("A")){
+            this.timePeriod = ANTE_MERIDIEM;
+        }
+        else if(timeStr.contains("p") || timeStr.contains("P")){
+            this.timePeriod = POST_MERIDIEM;
+        }
+    }
+
     public void setHours(int hours) {
         this.hours = hours;
     }
@@ -81,5 +92,10 @@ public class SimpleTime implements Serializable {
             e.printStackTrace();
         }
         return jsonObject;
+    }
+
+    @Override
+    public String toString() {
+        return "" + getHours() + ":" + getMinutes();
     }
 }

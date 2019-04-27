@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import edu.temple.mobiledevgroupproject.MainActivity;
+import edu.temple.mobiledevgroupproject.Objects.SharedPrefManager;
 import edu.temple.mobiledevgroupproject.Objects.User;
 import edu.temple.mobiledevgroupproject.R;
 
@@ -44,6 +45,10 @@ public class LogInActivity extends AppCompatActivity implements LogInFragment.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
+        if(SharedPrefManager.getInstance(this).isLoggedIn()){
+            finish();
+            startActivity(new Intent(this, MainActivity.class));
+        }
 
         fragmentContainer = findViewById(R.id.login_frag_container);
 
@@ -69,7 +74,6 @@ public class LogInActivity extends AppCompatActivity implements LogInFragment.Lo
             File file = new File(getFilesDir(), FILENAME);
             JSONArray jsonArray = null;
             jsonArray.put(existingUser.getUserName());
-            jsonArray.put(existingUser.getPassword());
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(file);
                 fileOutputStream.write(jsonArray.toString().getBytes());

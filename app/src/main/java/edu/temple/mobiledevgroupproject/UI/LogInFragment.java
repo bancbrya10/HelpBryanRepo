@@ -32,8 +32,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import edu.temple.mobiledevgroupproject.Objects.Constants;
+import edu.temple.mobiledevgroupproject.Objects.Job;
+import edu.temple.mobiledevgroupproject.Objects.Record;
 import edu.temple.mobiledevgroupproject.Objects.RequestHandler;
 import edu.temple.mobiledevgroupproject.Objects.SharedPrefManager;
+import edu.temple.mobiledevgroupproject.Objects.SimpleDate;
 import edu.temple.mobiledevgroupproject.Objects.User;
 import edu.temple.mobiledevgroupproject.R;
 
@@ -97,13 +101,12 @@ public class LogInFragment extends Fragment {
                 String password = passwordField.getText().toString();
                 if (allFieldsHaveInput()) {
                     userLogin(userName, password);
-                    User constructedExistingUser = constructExistingUser(userName, password);
+                    User constructedExistingUser = constructExistingUser();
                     if (rememberMeBox.isChecked()) {
                         logInListener.sendExistingUser(constructedExistingUser, true);
                     } else {
                         logInListener.sendExistingUser(constructedExistingUser, false);
                     }
-                    Toast.makeText(getContext(), R.string.login_success, Toast.LENGTH_SHORT).show();
                 } else {
                     if (allFieldsHaveInput()) {
                         Toast.makeText(getContext(), R.string.login_fail, Toast.LENGTH_SHORT).show();
@@ -128,19 +131,29 @@ public class LogInFragment extends Fragment {
     /**
      * Query database retrieving information of User with username and password pair matching userName and password params.
      * Construct new User object.
-     * @param userName username String of an already validated user
-     * @param password password String of an already validated user
      * @return new User object corresponding to the userName and password params.
      */
-    private User constructExistingUser(String userName, String password) {
+    private User constructExistingUser() {
+        /*
+        SharedPrefManager sharedPrefManager = SharedPrefManager.getInstance(getContext());
+        User existingUser = new User();
+        existingUser.setName(sharedPrefManager.getName());
+        existingUser.setUserName(sharedPrefManager.getUserName());
+        existingUser.setUserBirthDay(new SimpleDate(sharedPrefManager.getBirthday()));
+        existingUser.setPreviousJobs(new Record<Job>("Previous Jobs", "Job"));
+        existingUser.setCurrentEnrolledJobs(new Record<Job>("Current Enrolled Jobs", "Job"));
+        existingUser.setCurrentPostedJobs(new Record<Job>("Current Posted Jobs", "Job"));
+        existingUser.setUserRating(sharedPrefManager.getRating());
+        */
         return null;
     }
 
+    //Create a new user object based on the data in the database
     private void userLogin(final String userName, final String password){
         progressDialog.setMessage("Logging in...");
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                "http://169.254.117.93/volunteer_app/v1/userLogin.php",
+                Constants.LOGIN_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -153,7 +166,6 @@ public class LogInFragment extends Fragment {
                                         jsonObject.getString("birthday"), jsonObject.getString("previousJobs"),
                                         jsonObject.getString("currentEnrolledJobs"), jsonObject.getString("currentPostedJobs"),
                                         jsonObject.getDouble("rating"));
-                                Toast.makeText(getContext(),"User login successful",Toast.LENGTH_LONG).show();
                             }
                             else{
                                 Toast.makeText(getContext(),jsonObject.getString("message"),Toast.LENGTH_LONG).show();

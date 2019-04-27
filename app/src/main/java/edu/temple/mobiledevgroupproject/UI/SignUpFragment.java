@@ -11,6 +11,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.provider.SyncStateContract;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.temple.mobiledevgroupproject.Objects.Constants;
 import edu.temple.mobiledevgroupproject.Objects.RequestHandler;
 import edu.temple.mobiledevgroupproject.Objects.SimpleDate;
 import edu.temple.mobiledevgroupproject.Objects.User;
@@ -93,27 +95,30 @@ public class SignUpFragment extends Fragment {
 
                     String name = nameField.getText().toString();
                     String userName = userNameField.getText().toString();
-                    String hashedPassword = User.hashAndSaltPassword(passwordField.getText().toString());
+                    String password = passwordField.getText().toString();
                     int month = Integer.valueOf(monthField.getText().toString());
                     int day = Integer.valueOf(dayField.getText().toString());
                     int year = Integer.valueOf(yearField.getText().toString());
 
-                    //construct new User object
-                    User newUser = new User()
-                            .setName(name)
-                            .setUserName(userName)
-                            .setPassword(hashedPassword)
-                            .setUserBirthDay(new SimpleDate(year, month, day))
-                            .setPreviousJobs(null)
-                            .setCurrentEnrolledJobs(null)
-                            .setCurrentPostedJobs(null)
-                            .setUserRating(User.DEFAULT_RATING);
+                    if(isBirthdayValid(day, month, year)){
+                        //construct new User object
+                        User newUser = new User()
+                                .setName(name)
+                                .setUserName(userName)
+                                .setUserBirthDay(new SimpleDate(month, day, year))
+                                .setPreviousJobs(null)
+                                .setCurrentEnrolledJobs(null)
+                                .setCurrentPostedJobs(null)
+                                .setUserRating(User.DEFAULT_RATING);
+                        registerUser(newUser);
 
-                    registerUser(newUser);
+                        //pass signup data to parent activity
+                        signUpListener.sendNewUser(newUser);
+                    }
+                    else{
+                        Toast.makeText(getContext(), "Please enter valid values for birthday", Toast.LENGTH_LONG).show();
+                    }
 
-                    Toast.makeText(getContext(), R.string.signup_success, Toast.LENGTH_SHORT).show();
-                    //pass signup data to parent activity
-                    signUpListener.sendNewUser(newUser);
                 } else {
                     if (allFieldsHaveInput()) {
                         Toast.makeText(getContext(), R.string.signup_fail, Toast.LENGTH_SHORT).show();
@@ -153,22 +158,23 @@ public class SignUpFragment extends Fragment {
             return false;
         }
 
-        return false;
+        return true;
     }
 
+    //Post the data from the fields to the database
     private void registerUser(final User user){
         final String birthday = "" + user.getUserBirthDay().getYear() + "-" + user.getUserBirthDay().getMonth()+ "-" + user.getUserBirthDay().getDay();
         progressDialog.setMessage("Registering new user...");
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                "http://169.254.117.93/volunteer_app/v1/registerUser.php",
+                Constants.SIGN_UP_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         progressDialog.hide();
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            Toast.makeText(getContext(),jsonObject.toString(),Toast.LENGTH_LONG).show();
+                            Log.d("SignUpResponse", jsonObject.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -185,8 +191,7 @@ public class SignUpFragment extends Fragment {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("name",user.getName());
-                params.put("userClass",user.getUserName());
-                params.put("password",user.getPassword());
+                params.put("userName",user.getUserName());
                 params.put("birthday",birthday);
                 params.put("rating","" + user.getUserRating());
                 return params;
@@ -195,4 +200,11 @@ public class SignUpFragment extends Fragment {
         RequestHandler.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
     //TODO CHECK FOR INVALID BIRTHDATE
+
+    private boolean isBirthdayValid(int day, int month, int year){
+        if(year >= 1800 && month >= 1 && month <= 12 && day >=1 && day <= 31){
+            return true;
+        }
+        return false;
+    }
 }

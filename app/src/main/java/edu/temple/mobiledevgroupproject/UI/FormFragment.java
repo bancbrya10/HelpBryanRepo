@@ -13,6 +13,7 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.temple.mobiledevgroupproject.Objects.Comment;
+import edu.temple.mobiledevgroupproject.Objects.Constants;
 import edu.temple.mobiledevgroupproject.Objects.Job;
 import edu.temple.mobiledevgroupproject.Objects.Record;
 import edu.temple.mobiledevgroupproject.Objects.RequestHandler;
@@ -345,14 +347,14 @@ public class FormFragment extends Fragment {
         progressDialog.setMessage("Registering new job...");
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                "http://169.254.117.93/volunteer_app/v1/registerJob.php",
+                Constants.NEW_JOB_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         progressDialog.hide();
                         try {
                             JSONObject jsonObject = new JSONObject(response);
-                            Toast.makeText(getContext(),jsonObject.toString(),Toast.LENGTH_LONG).show();
+                            Log.d("RegisterJobResponse", jsonObject.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -368,12 +370,12 @@ public class FormFragment extends Fragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("jobTitle",job.getJobTitle());
-                params.put("jobDescription",job.getJobDescription());
-                params.put("datePosted",job.getDatePosted().toString());
-                params.put("dateOfJob",job.getDateOfJob().toString());
-                params.put("startTime",job.getStartTime().toString());
-                params.put("endTime",job.getEndTime().toString());
+                params.put("jobTitle", job.getJobTitle());
+                params.put("jobDescription", job.getJobDescription());
+                params.put("datePosted", "" + job.getDatePosted().getYear() + "-" + job.getDatePosted().getMonth() + "-" + job.getDatePosted().getDay());
+                params.put("dateOfJob", "" + job.getDateOfJob().getYear() + "-" + job.getDateOfJob().getMonth() + "-" + job.getDateOfJob().getDay());
+                params.put("startTime", "" + job.getStartTime().getHours() + ":" + job.getStartTime().getMinutes());
+                params.put("endTime", "" + job.getEndTime().getHours() + ":" + job.getEndTime().getMinutes());
                 params.put("latitude",String.valueOf(job.getLocation().latitude));
                 params.put("longitude",String.valueOf(job.getLocation().longitude));
                 params.put("postedBy",job.getUser().getUserName());

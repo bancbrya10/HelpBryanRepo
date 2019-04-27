@@ -39,7 +39,6 @@ public class User implements Parcelable {
 
     private String name;
     private String userName;
-    private String password;
     private SimpleDate userBirthDay;
     private Record<Job> previousJobs;
     private Record<Job> currentEnrolledJobs;
@@ -50,6 +49,13 @@ public class User implements Parcelable {
 
     }
 
+    //TODO create constructor
+    /*
+    public User(String name, String userName, String birthday, ){
+
+    }
+    */
+
     public User setName(String name) {
         this.name = name;
         return this;
@@ -57,11 +63,6 @@ public class User implements Parcelable {
 
     public User setUserName(String userName) {
         this.userName = userName;
-        return this;
-    }
-
-    public User setPassword(String password) {
-        this.password = password;
         return this;
     }
 
@@ -96,10 +97,6 @@ public class User implements Parcelable {
 
     public String getUserName() {
         return userName;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public SimpleDate getUserBirthDay() {
@@ -175,7 +172,6 @@ public class User implements Parcelable {
     protected User(Parcel in) {
         name = in.readString();
         userName = in.readString();
-        password = in.readString();
         userBirthDay = (SimpleDate) in.readValue(SimpleDate.class.getClassLoader());
         previousJobs = (Record<Job>) in.readValue(Record.class.getClassLoader());
         currentEnrolledJobs = (Record<Job>) in.readValue(Record.class.getClassLoader());
@@ -192,7 +188,6 @@ public class User implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(userName);
-        dest.writeString(password);
         dest.writeValue(userBirthDay);
         dest.writeValue(previousJobs);
         dest.writeValue(currentEnrolledJobs);
@@ -282,7 +277,6 @@ public class User implements Parcelable {
         try {
             jsonObject.put("full_name", name);
             jsonObject.put("name", userName);
-            jsonObject.put("password", password);
             jsonObject.put("age", userBirthDay);
             jsonObject.put("rating", userRating);
             jsonObject.put("posted_jobs", currentPostedJobs);

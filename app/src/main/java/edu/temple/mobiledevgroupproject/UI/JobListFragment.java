@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import java.util.ArrayList;
 
 import edu.temple.mobiledevgroupproject.Objects.Job;
@@ -54,7 +55,7 @@ public class JobListFragment extends Fragment implements RecyclerViewItemClicked
 
         Bundle args = getArguments();
         if (args != null) {
-            jobList = (ArrayList<Job>) args.getSerializable("job_list");
+            jobList = (ArrayList<Job>) args.getParcelable("job_list");
         }
 
         recyclerView = view.findViewById(R.id.recycler_view);

@@ -1,9 +1,16 @@
 package edu.temple.mobiledevgroupproject.Objects;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class SimpleDate implements Serializable {
     private int year;
@@ -14,6 +21,12 @@ public class SimpleDate implements Serializable {
         this.year = year;
         this.month = month;
         this.day = day;
+    }
+
+    public SimpleDate(String dateStr){
+        this.year = Integer.valueOf(dateStr.substring(0,4));
+        this.month = Integer.valueOf(dateStr.substring(5,7));
+        this.day = Integer.valueOf(dateStr.substring(8,10));
     }
 
     public int getYear() {
@@ -80,5 +93,10 @@ public class SimpleDate implements Serializable {
             e.printStackTrace();
         }
         return jsonObject;
+    }
+
+    @Override
+    public String toString() {
+        return "" + getYear() + "-" + getMonth() + "-" + getDay();
     }
 }
