@@ -28,6 +28,9 @@ public class SimpleTime implements Serializable {
         else if(timeStr.contains("p") || timeStr.contains("P")){
             this.timePeriod = POST_MERIDIEM;
         }
+        else{
+            this.timePeriod = "";
+        }
     }
 
     public void setHours(int hours) {

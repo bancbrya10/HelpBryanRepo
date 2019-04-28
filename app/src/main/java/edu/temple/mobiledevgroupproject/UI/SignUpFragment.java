@@ -45,6 +45,7 @@ public class SignUpFragment extends Fragment {
     EditText monthField;
     EditText dayField;
     EditText yearField;
+    ProgressDialog progressDialog;
 
     SignUpInterface signUpListener;
     View view;
@@ -82,6 +83,7 @@ public class SignUpFragment extends Fragment {
         monthField = view.findViewById(R.id.month_et_sign);
         dayField = view.findViewById(R.id.day_et_sign);
         yearField = view.findViewById(R.id.year_et_sign);
+        progressDialog = new ProgressDialog(getContext());
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,12 +160,15 @@ public class SignUpFragment extends Fragment {
 
     //Post the data from the fields to the database
     private void registerUser(final User user){
+        progressDialog.setMessage("Registerig new user...");
+        progressDialog.show();
         final String birthday = "" + user.getUserBirthDay().getYear() + "-" + user.getUserBirthDay().getMonth()+ "-" + user.getUserBirthDay().getDay();
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 Constants.SIGN_UP_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        progressDialog.hide();
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             Log.d("SignUpResponse", jsonObject.toString());
@@ -175,6 +180,7 @@ public class SignUpFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        progressDialog.hide();
                         Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }){

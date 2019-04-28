@@ -49,6 +49,7 @@ public class LogInFragment extends Fragment {
     Button confirmButton;
     CheckBox rememberMeBox;
     TextView newTextView;
+    ProgressDialog progressDialog;
 
     LogInInterface logInListener;
     View view;
@@ -85,6 +86,7 @@ public class LogInFragment extends Fragment {
         confirmButton = view.findViewById(R.id.confirm_button_log);
         rememberMeBox = view.findViewById(R.id.checkbox_log);
         newTextView = view.findViewById(R.id.new_text_view);
+        progressDialog = new ProgressDialog(getContext());
 
         newTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,16 +151,16 @@ public class LogInFragment extends Fragment {
 
     //Create a new user object based on the data in the database
     private void userLogin(final String userName, final String password){
-        Log.d("LoginDebug1", "Login Function");
+        progressDialog.setMessage("Logging in...");
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 Constants.LOGIN_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            Log.d("LoginDebug2a", "On Response");
+                            progressDialog.hide();
                             JSONObject jsonObject = new JSONObject(response);
-                            Log.d("Response", jsonObject.toString());
                             if(!jsonObject.getBoolean("error")){
                                 SharedPrefManager.getInstance(getContext()).userLogin(jsonObject.getInt("id"),
                                         jsonObject.getString("name"), jsonObject.getString("userName"),
@@ -177,7 +179,7 @@ public class LogInFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("LoginDebug2a", "On Error");
+                        progressDialog.hide();
                         Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }){
