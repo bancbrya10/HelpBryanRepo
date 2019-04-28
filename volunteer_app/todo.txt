@@ -1,8 +1,0 @@
-Add comment functionality (android/php)
-	Create new table for comments and update commentactivity
-Implement Records
-	Update user profile info for posted and enrolled jobs
-Logout Functionality
-Refresh Button
-Fix time AM/PM in jobviewactivity
-Add job location markers to mainactivity
