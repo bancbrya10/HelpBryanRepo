@@ -135,7 +135,8 @@ public class Job implements Parcelable {
         startTime = (SimpleTime) in.readValue(SimpleTime.class.getClassLoader());
         endTime = (SimpleTime) in.readValue(SimpleTime.class.getClassLoader());
         location = (LatLng) in.readValue(SimpleDate.class.getClassLoader());
-        user = (User) in.readValue(User.class.getClassLoader());
+        user = new User();
+        //user = (User) in.readValue(User.class.getClassLoader());
         commentList = (Record<Comment>) in.readValue(Record.class.getClassLoader());
     }
 

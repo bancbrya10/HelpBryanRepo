@@ -1,6 +1,6 @@
 package edu.temple.mobiledevgroupproject;
 
-import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -23,22 +23,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import edu.temple.mobiledevgroupproject.Objects.Comment;
 import edu.temple.mobiledevgroupproject.Objects.Constants;
@@ -92,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements JobListFragment.J
             thisUser.setUserRating(SharedPrefManager.getInstance(this).getRating());
 
             //Get the jobs from the database and set up nav menu
-            getJobs();
+            getJobs(getApplicationContext());
 
             //initialize layout objects
             drawerLayout = findViewById(R.id.drawer_layout);
@@ -104,48 +108,7 @@ public class MainActivity extends AppCompatActivity implements JobListFragment.J
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
             navigationView = findViewById(R.id.nav_view);
 
-            //place MapFragment as first one within the main container
-            fragmentManager = getSupportFragmentManager();
-            mapFragment = new MapFragment();
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
 
-            //listen for nav. item selected events
-            navigationView.setNavigationItemSelectedListener(
-                    new NavigationView.OnNavigationItemSelectedListener() {
-                        @Override
-                        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                            menuItem.setChecked(true);
-                            //launch different fragments depending on selected nav. menu item
-                            switch (menuItem.getItemId()) {
-                                case R.id.nav_profile:
-                                    profileFragment = new ProfileFragment();
-                                    Bundle args2 = new Bundle();
-                                    args2.putParcelable("user_to_display", thisUser);
-                                    profileFragment.setArguments(args2);
-                                    fragmentManager.beginTransaction().replace(R.id.fragment_container, profileFragment).commit();
-                                    break;
-                                case R.id.nav_postjob:
-                                    formFragment = new FormFragment();
-                                    Bundle args3 = new Bundle();
-                                    args3.putParcelable("this_user", thisUser);
-                                    formFragment.setArguments(args3);
-                                    fragmentManager.beginTransaction().replace(R.id.fragment_container, formFragment).commit();
-                                    break;
-                                case R.id.nav_joblist:
-                                    jobListFragment = new JobListFragment();
-                                    Bundle args4 = new Bundle();
-                                    args4.putParcelableArrayList("job_list", jobList);
-                                    fragmentManager.beginTransaction().replace(R.id.fragment_container, jobListFragment).commit();
-                                    break;
-                                case R.id.nav_map:
-                                    mapFragment = new MapFragment();
-                                    fragmentManager.beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
-                                    break;
-                            }
-                            drawerLayout.closeDrawers();
-                            return true;
-                        }
-                    });
         }
         else{
             finish();
@@ -244,11 +207,6 @@ public class MainActivity extends AppCompatActivity implements JobListFragment.J
         startActivity(jobViewIntent);
     }
 
-    private void addJobs(String jobListStr){
-            JsonArray jobListArr = new JsonParser().parse(jobListStr).getAsJsonArray();
-
-    }
-
     /*
     private void addJob(){
         SharedPrefManager sharedPrefManager = SharedPrefManager.getInstance(getApplicationContext());
@@ -273,45 +231,98 @@ public class MainActivity extends AppCompatActivity implements JobListFragment.J
     */
 
     //Get the jobs from the database and store them in an arraylist
-    private void getJobs(){
+    private void getJobs(Context context){
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 Constants.GET_JOBS_URL,
                 new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
-                            if(!jsonObject.getBoolean("error")){
-                                JsonArray jobListArr = new JsonParser().parse(jsonObject.getString("jobs")).getAsJsonArray();
-                                //SharedPrefManager.getInstance(getApplicationContext()).addJob(jobJsonArray.getAsString());
+                    public void onResponse(final String response) {
+                        //Mechanism to wait for job data to load prior to handling UI
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response);
+                                    Log.d("JobResponse", jsonObject.toString());
 
-                                for(int i = 0; i < jobListArr.size(); i++) {
-                                    JsonObject tempJson = jobListArr.get(i).getAsJsonObject();
-                                    Job tempJob = new Job();
-                                    tempJob.setJobTitle(tempJson.get("jobTitle").getAsString());
-                                    tempJob.setJobDescription(tempJson.get("jobDescription").getAsString());
-                                    tempJob.setDatePosted(new SimpleDate(tempJson.get("datePosted").getAsString()));
-                                    tempJob.setDateOfJob(new SimpleDate(tempJson.get("dateOfJob").getAsString()));
-                                    tempJob.setStartTime(new SimpleTime(tempJson.get("startTime").getAsString()));
-                                    tempJob.setEndTime(new SimpleTime(tempJson.get("endTime").getAsString()));
-                                    tempJob.setLocation(new LatLng(Double.valueOf(tempJson.get("latitude").getAsString()), Double.valueOf(tempJson.get("longitude").getAsString())));
-                                    Log.d("JobToAdd", tempJob.toString());
-                                    //TODO figure out how to generate user from username
-                                    tempJob.setUser(new User());
-                                    //TODO figure out comments
-                                    tempJob.setCommentList(new Record<Comment>("TestComment", "Comment"));
-                                    jobList.add(tempJob);
+                                    if(!jsonObject.getBoolean("error")){
+                                        JsonArray jobListArr = new JsonParser().parse(jsonObject.getString("jobs")).getAsJsonArray();
+                                        //Log.d("JobJsonArr", jobListArr.getAsString());
+
+                                        //Parse JsonArray into job objects for ListView
+                                        for(int i = 0; i < jobListArr.size(); i++) {
+                                            JsonObject tempJson = jobListArr.get(i).getAsJsonObject();
+                                            Job tempJob = new Job();
+                                            tempJob.setJobTitle(tempJson.get("jobTitle").getAsString());
+                                            tempJob.setJobDescription(tempJson.get("jobDescription").getAsString());
+                                            tempJob.setDatePosted(new SimpleDate(tempJson.get("datePosted").getAsString()));
+                                            tempJob.setDateOfJob(new SimpleDate(tempJson.get("dateOfJob").getAsString()));
+                                            tempJob.setStartTime(new SimpleTime(tempJson.get("startTime").getAsString()));
+                                            tempJob.setEndTime(new SimpleTime(tempJson.get("endTime").getAsString()));
+                                            tempJob.setLocation(new LatLng(Double.valueOf(tempJson.get("latitude").getAsString()), Double.valueOf(tempJson.get("longitude").getAsString())));
+                                            Log.d("JobToAdd", tempJob.toString());
+                                            //TODO figure out how to generate user from username
+                                            tempJob.setUser(new User());
+                                            //TODO figure out comments
+                                            tempJob.setCommentList(new Record<Comment>("TestComment", "Comment"));
+                                            jobList.add(tempJob);
+                                        }
+
+                                        Log.d("JobList", jobList.toString());
+
+                                        //place MapFragment as first one within the main container
+                                        fragmentManager = getSupportFragmentManager();
+                                        mapFragment = new MapFragment();
+                                        fragmentManager.beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
+
+                                        //listen for nav. item selected events
+                                        navigationView.setNavigationItemSelectedListener(
+                                                new NavigationView.OnNavigationItemSelectedListener() {
+                                                    @Override
+                                                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                                                        menuItem.setChecked(true);
+                                                        //launch different fragments depending on selected nav. menu item
+                                                        switch (menuItem.getItemId()) {
+                                                            case R.id.nav_profile:
+                                                                profileFragment = new ProfileFragment();
+                                                                Bundle args2 = new Bundle();
+                                                                args2.putParcelable("user_to_display", thisUser);
+                                                                profileFragment.setArguments(args2);
+                                                                fragmentManager.beginTransaction().replace(R.id.fragment_container, profileFragment).commit();
+                                                                break;
+                                                            case R.id.nav_postjob:
+                                                                formFragment = new FormFragment();
+                                                                Bundle args3 = new Bundle();
+                                                                args3.putParcelable("this_user", thisUser);
+                                                                formFragment.setArguments(args3);
+                                                                fragmentManager.beginTransaction().replace(R.id.fragment_container, formFragment).commit();
+                                                                break;
+                                                            case R.id.nav_joblist:
+                                                                jobListFragment = new JobListFragment();
+                                                                Bundle args4 = new Bundle();
+                                                                args4.putParcelableArrayList("job_list", jobList);
+                                                                jobListFragment.setArguments(args4);
+                                                                fragmentManager.beginTransaction().replace(R.id.fragment_container, jobListFragment).commit();
+                                                                break;
+                                                            case R.id.nav_map:
+                                                                mapFragment = new MapFragment();
+                                                                fragmentManager.beginTransaction().replace(R.id.fragment_container, mapFragment).commit();
+                                                                break;
+                                                        }
+                                                        drawerLayout.closeDrawers();
+                                                        return true;
+                                                    }
+                                                });
+                                    }
+                                    else{
+                                        Toast.makeText(getApplicationContext(), jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                        Log.d("JobResponse", "Error getting jobs");
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-
-                                Log.d("JobList", jobList.toString());
                             }
-                            else{
-                                Toast.makeText(getApplicationContext(), jsonObject.getString("message"), Toast.LENGTH_LONG).show();
-                                Log.d("JobResponse", "Error getting jobs");
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        });
                     }
                 },
                 new Response.ErrorListener() {
@@ -322,9 +333,5 @@ public class MainActivity extends AppCompatActivity implements JobListFragment.J
                 }){
         };
         RequestHandler.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);
-    }
-
-    public interface VolleyCallback{
-        void onSuccess(JsonArray result);
     }
 }

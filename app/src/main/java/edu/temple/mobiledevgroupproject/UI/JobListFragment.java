@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,8 +56,10 @@ public class JobListFragment extends Fragment implements RecyclerViewItemClicked
 
         Bundle args = getArguments();
         if (args != null) {
-            jobList = (ArrayList<Job>) args.getParcelable("job_list");
+            jobList = args.getParcelableArrayList("job_list");
         }
+
+        Log.d("FragmentJobList", jobList.toString());
 
         recyclerView = view.findViewById(R.id.recycler_view);
         listAdapter = new ListAdapter(jobList, this);
