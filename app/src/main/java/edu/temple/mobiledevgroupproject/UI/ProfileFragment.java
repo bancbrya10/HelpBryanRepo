@@ -4,12 +4,14 @@
 
 package edu.temple.mobiledevgroupproject.UI;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +19,7 @@ import java.util.Calendar;
 
 import edu.temple.mobiledevgroupproject.Objects.Job;
 import edu.temple.mobiledevgroupproject.Objects.Record;
+import edu.temple.mobiledevgroupproject.Objects.SharedPrefManager;
 import edu.temple.mobiledevgroupproject.Objects.SimpleDate;
 import edu.temple.mobiledevgroupproject.Objects.User;
 import edu.temple.mobiledevgroupproject.R;
@@ -30,6 +33,7 @@ public class ProfileFragment extends Fragment {
     private TextView currentlyEnrolledView;
     private TextView previouslyEnrolledView;
     private ImageView profileImgView;
+    private Button logoutButton;
 
     //other objects
     User userToDisplay;
@@ -58,6 +62,7 @@ public class ProfileFragment extends Fragment {
         currentlyEnrolledView = mView.findViewById(R.id.currently_enrolled_view);
         previouslyEnrolledView = mView.findViewById(R.id.past_enrolled_view);
         profileImgView = mView.findViewById(R.id.profile_img);
+        logoutButton = mView.findViewById(R.id.logout_button);
 
         if (userToDisplay != null) {
             userNameView.setText(userToDisplay.getUserName());
@@ -75,6 +80,14 @@ public class ProfileFragment extends Fragment {
                 Bitmap profImgBitmap = User.decodeToBitmap(profImgString);
                 profileImgView.setImageBitmap(profImgBitmap);
             }
+
+            logoutButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPrefManager.getInstance(getContext()).logout();
+                    startActivity(new Intent(getContext(), LogInActivity.class));
+                }
+            });
         }
 
         return mView;

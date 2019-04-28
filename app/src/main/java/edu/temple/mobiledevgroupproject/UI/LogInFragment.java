@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,6 @@ public class LogInFragment extends Fragment {
     Button confirmButton;
     CheckBox rememberMeBox;
     TextView newTextView;
-    ProgressDialog progressDialog;
 
     LogInInterface logInListener;
     View view;
@@ -85,7 +85,6 @@ public class LogInFragment extends Fragment {
         confirmButton = view.findViewById(R.id.confirm_button_log);
         rememberMeBox = view.findViewById(R.id.checkbox_log);
         newTextView = view.findViewById(R.id.new_text_view);
-        progressDialog = new ProgressDialog(getContext());
 
         newTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,16 +149,16 @@ public class LogInFragment extends Fragment {
 
     //Create a new user object based on the data in the database
     private void userLogin(final String userName, final String password){
-        progressDialog.setMessage("Logging in...");
-        progressDialog.show();
+        Log.d("LoginDebug1", "Login Function");
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 Constants.LOGIN_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        progressDialog.hide();
                         try {
+                            Log.d("LoginDebug2a", "On Response");
                             JSONObject jsonObject = new JSONObject(response);
+                            Log.d("Response", jsonObject.toString());
                             if(!jsonObject.getBoolean("error")){
                                 SharedPrefManager.getInstance(getContext()).userLogin(jsonObject.getInt("id"),
                                         jsonObject.getString("name"), jsonObject.getString("userName"),
@@ -178,7 +177,7 @@ public class LogInFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        progressDialog.hide();
+                        Log.d("LoginDebug2a", "On Error");
                         Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }){

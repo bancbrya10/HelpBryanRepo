@@ -61,7 +61,6 @@ public class FormFragment extends Fragment {
     Button startButton;
     Button endButton;
     Button confirmButton;
-    ProgressDialog progressDialog;
 
     //other objects
     FormInterface formInterfaceListener;
@@ -114,7 +113,6 @@ public class FormFragment extends Fragment {
         startButton = mView.findViewById(R.id.start_button);
         endButton = mView.findViewById(R.id.end_button);
         confirmButton = mView.findViewById(R.id.confirm_button_f);
-        progressDialog = new ProgressDialog(getContext());
 
         Calendar cal = Calendar.getInstance();
         //android encodes jan. as 0 and dec. as 11
@@ -344,14 +342,11 @@ public class FormFragment extends Fragment {
     }
 
     private void registerJob(final Job job){
-        progressDialog.setMessage("Registering new job...");
-        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 Constants.NEW_JOB_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        progressDialog.hide();
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             Log.d("RegisterJobResponse", jsonObject.toString());
@@ -363,7 +358,6 @@ public class FormFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        progressDialog.hide();
                         Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }){

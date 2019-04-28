@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +13,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.temple.mobiledevgroupproject.Objects.Comment;
+import edu.temple.mobiledevgroupproject.Objects.Constants;
 import edu.temple.mobiledevgroupproject.Objects.Job;
+import edu.temple.mobiledevgroupproject.Objects.RequestHandler;
 import edu.temple.mobiledevgroupproject.Objects.SimpleDate;
 import edu.temple.mobiledevgroupproject.Objects.User;
 import edu.temple.mobiledevgroupproject.R;
@@ -108,5 +122,35 @@ public class CommentFragment extends Fragment implements RecyclerViewItemClicked
         //TODO if time permits, implement a feature where comment replies are more obvious/better looking
         String selectedUserName = commentsList.get(position).getUser().getUserName();
         commentEditText.setText("@" + selectedUserName);
+    }
+
+    private void addComment(final String comment){
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                Constants.COMMENT_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("jobTitle", job.getJobTitle());
+                params.put("jobDescription", job.getJobDescription());
+                return params;
+            }
+        };
+        RequestHandler.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
 }

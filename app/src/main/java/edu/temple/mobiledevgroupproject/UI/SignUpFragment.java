@@ -9,7 +9,6 @@ package edu.temple.mobiledevgroupproject.UI;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,11 +20,9 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,7 +45,6 @@ public class SignUpFragment extends Fragment {
     EditText monthField;
     EditText dayField;
     EditText yearField;
-    ProgressDialog progressDialog;
 
     SignUpInterface signUpListener;
     View view;
@@ -86,7 +82,6 @@ public class SignUpFragment extends Fragment {
         monthField = view.findViewById(R.id.month_et_sign);
         dayField = view.findViewById(R.id.day_et_sign);
         yearField = view.findViewById(R.id.year_et_sign);
-        progressDialog = new ProgressDialog(getContext());
 
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,14 +159,11 @@ public class SignUpFragment extends Fragment {
     //Post the data from the fields to the database
     private void registerUser(final User user){
         final String birthday = "" + user.getUserBirthDay().getYear() + "-" + user.getUserBirthDay().getMonth()+ "-" + user.getUserBirthDay().getDay();
-        progressDialog.setMessage("Registering new user...");
-        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 Constants.SIGN_UP_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        progressDialog.hide();
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             Log.d("SignUpResponse", jsonObject.toString());
@@ -183,7 +175,6 @@ public class SignUpFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        progressDialog.hide();
                         Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }){

@@ -48,7 +48,8 @@
 
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal">
 
         <TableRow
             android:layout_width="match_parent"
@@ -113,7 +114,14 @@
                 android:text="test"
                 android:textSize="24sp" />
         </TableRow>
-
+        <TableRow>
+            <Button
+                android:id="@+id/logout_button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="Logout" />
+        </TableRow>
     </TableLayout>
+
 
 </LinearLayout>
