@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,6 +38,10 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
     TextView jobLocView;
     TextView jobUserView;
     TextView viewComments;
+    TextView startLabel;
+    TextView endLabel;
+    TextView startDateLabel;
+    TextView datePostedLabel;
     Button confirmButton;
     FrameLayout container;
 
@@ -53,20 +59,6 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
             thisUser = (User) recIntent.getParcelableExtra("this_user");
         }
 
-        /*thisUser = new User()
-        .setUserName("JerryGarcia1995");
-
-        jobToDisplay = new Job();
-        jobToDisplay.setJobTitle("New Opportunity. Please come help me!!!")
-                .setJobDescription("This is going to be such a good job. I need you guys to come help me.")
-                .setDatePosted(new SimpleDate(10,2,2018))
-                .setDateOfJob(new SimpleDate(10, 16, 2018))
-                .setStartTime(new SimpleTime(2, 30, SimpleTime.POST_MERIDIEM))
-                .setEndTime(new SimpleTime(4, 45, SimpleTime.POST_MERIDIEM))
-                .setLocation(new LatLng(41.044089, -75.301557))
-                .setUser(thisUser)
-                .setCommentList(new Record<Comment>("comment record", Record.COMMENT_RECORD));*/
-
         jobTitleView = findViewById(R.id.job_title_view);
         jobDescView = findViewById(R.id.job_desc_view);
         jobDateView = findViewById(R.id.job_date_view);
@@ -77,20 +69,22 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
         jobUserView = findViewById(R.id.job_user_view);
         viewComments = findViewById(R.id.see_comment_view);
         confirmButton = findViewById(R.id.confirm_button_jv);
+        startLabel = findViewById(R.id.start_time_label);
+        endLabel = findViewById(R.id.end_time_label);
+        startDateLabel = findViewById(R.id.start_date_label);
+        datePostedLabel = findViewById(R.id.date_posted_label);
 
         if (jobToDisplay != null) {
             jobTitleView.setText(jobToDisplay.getJobTitle());
             jobDescView.setText(jobToDisplay.getJobDescription());
             jobDateView.setText(getDateString(jobToDisplay.getDateOfJob()));
             jobPostedView.setText(getDateString(jobToDisplay.getDatePosted()));
-            String startHours = String.valueOf(jobToDisplay.getStartTime().getHours());
-            String startMins = String.valueOf(jobToDisplay.getStartTime().getMinutes());
+            String startTimeStr = formatTime(jobToDisplay.getStartTime().getHours(), jobToDisplay.getStartTime().getMinutes());
             String startPeriod = jobToDisplay.getStartTime().getTimePeriod();
-            startTimeView.setText(startHours + ":" + startMins + " " + startPeriod);
-            String endHours = String.valueOf(jobToDisplay.getEndTime().getHours());
-            String endMins = String.valueOf(jobToDisplay.getEndTime().getMinutes());
+            startTimeView.setText(startTimeStr + " " + startPeriod);
+            String endTimeStr = formatTime(jobToDisplay.getEndTime().getHours(), jobToDisplay.getEndTime().getMinutes());
             String endPeriod = jobToDisplay.getEndTime().getTimePeriod();
-            endTimeView.setText(endHours + ":" + endMins + " " + endPeriod);
+            endTimeView.setText(endTimeStr + " " + endPeriod);
             jobLocView.setText(getAddrFromLatLng(jobToDisplay.getLocation()));
             jobUserView.setText(jobToDisplay.getUser().getUserName());
         }
@@ -225,5 +219,19 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
         if (container != null) {
             container.setVisibility(View.GONE);
         }
+    }
+
+    private String formatTime(int hours, int minutes){
+        String timeStr;
+        String minutesStr;
+        if(minutes < 10){
+            minutesStr = "0" + minutes;
+        }
+        else{
+            minutesStr = String.valueOf(minutes);
+        }
+
+        timeStr = "" + hours + ":" + minutesStr;
+        return timeStr;
     }
 }

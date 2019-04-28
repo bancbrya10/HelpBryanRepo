@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements JobListFragment.J
         switch(item.getItemId()) {
             //refresh button
             case R.id.action_refresh:
+                startActivity(new Intent(this, MainActivity.class));
                 return true;
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -206,29 +207,6 @@ public class MainActivity extends AppCompatActivity implements JobListFragment.J
         jobViewIntent.putExtra("this_user", thisUser);
         startActivity(jobViewIntent);
     }
-
-    /*
-    private void addJob(){
-        SharedPrefManager sharedPrefManager = SharedPrefManager.getInstance(getApplicationContext());
-        Job tempJob = new Job();
-        tempJob.setJobTitle(sharedPrefManager.getJobTitle());
-        tempJob.setJobDescription(sharedPrefManager.getJobDescription());
-        tempJob.setDatePosted(new SimpleDate(sharedPrefManager.getDatePosted()));
-        tempJob.setDateOfJob(new SimpleDate(sharedPrefManager.getDateOfJob()));
-        tempJob.setStartTime(new SimpleTime(sharedPrefManager.getStartTime()));
-        tempJob.setEndTime(new SimpleTime(sharedPrefManager.getEndTime()));
-        tempJob.setLocation(new LatLng(sharedPrefManager.getLatitude(), sharedPrefManager.getLongitude()));
-        Log.d("JobToAdd", tempJob.toString());
-        //TODO figure out how to generate user from username
-        tempJob.setUser(new User().setUserName(sharedPrefManager.getPostedBy()));
-        //TODO figure out comments
-        tempJob.setCommentList(new Record<Comment>("TestComment", "Comment"));
-
-        Log.d("AddJobMethod", tempJob.toString());
-
-        jobList.add(tempJob);
-    }
-    */
 
     //Get the jobs from the database and store them in an arraylist
     private void getJobs(Context context){

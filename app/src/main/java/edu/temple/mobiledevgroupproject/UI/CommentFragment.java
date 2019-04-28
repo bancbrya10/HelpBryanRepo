@@ -1,5 +1,6 @@
 package edu.temple.mobiledevgroupproject.UI;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.temple.mobiledevgroupproject.MainActivity;
 import edu.temple.mobiledevgroupproject.Objects.Comment;
 import edu.temple.mobiledevgroupproject.Objects.Constants;
 import edu.temple.mobiledevgroupproject.Objects.Job;
@@ -41,6 +43,7 @@ public class CommentFragment extends Fragment implements RecyclerViewItemClicked
     EditText commentEditText;
     Button postButton;
     CommentAdapter commentAdapter;
+    ProgressDialog progressDialog;
 
     //other objects
     Job job;
@@ -82,6 +85,7 @@ public class CommentFragment extends Fragment implements RecyclerViewItemClicked
         recyclerView = view.findViewById(R.id.comment_recycler);
         commentEditText = view.findViewById(R.id.comment_et);
         postButton = view.findViewById(R.id.post_button);
+        progressDialog = new ProgressDialog(getContext());
 
         commentAdapter = new CommentAdapter(commentsList, this);
         recyclerView.setAdapter(commentAdapter);
@@ -99,6 +103,9 @@ public class CommentFragment extends Fragment implements RecyclerViewItemClicked
                     Calendar cal = Calendar.getInstance();
                     SimpleDate thisDate = new SimpleDate(cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.YEAR));
                     Comment newComment = new Comment(commentString, user, thisDate);
+
+                    addComment(newComment.getCommentText());
+
                     commentPostedListener.getPostedComment(newComment);
 
                     //update RecyclerView list of comments; notify adapter
@@ -124,14 +131,19 @@ public class CommentFragment extends Fragment implements RecyclerViewItemClicked
         commentEditText.setText("@" + selectedUserName);
     }
 
+    //Add comment to database and update comment list
     private void addComment(final String comment){
+        progressDialog.setMessage("Adding comment...");
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
                 Constants.COMMENT_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        progressDialog.hide();
                         try {
                             JSONObject jsonObject = new JSONObject(response);
+                            Log.d("CommentResponse", jsonObject.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -140,14 +152,15 @@ public class CommentFragment extends Fragment implements RecyclerViewItemClicked
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        progressDialog.hide();
                         Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
+                params.put("body", comment);
                 params.put("jobTitle", job.getJobTitle());
-                params.put("jobDescription", job.getJobDescription());
                 return params;
             }
         };

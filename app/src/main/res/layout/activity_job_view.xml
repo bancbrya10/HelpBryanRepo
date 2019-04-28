@@ -66,6 +66,13 @@
                 android:textSize="24sp" />
 
             <TextView
+                android:id="@+id/start_date_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Date: "
+                android:textSize="24sp"/>
+
+            <TextView
                 android:id="@+id/job_date_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -83,22 +90,36 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/start-time-label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Start Time: "
+                        android:textSize="18sp"/>
+
+                    <TextView
                         android:id="@+id/job_start_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="start time"
-                        android:textSize="24sp" />
+                        android:textSize="18sp" />
 
                     <android.support.v4.widget.Space
                         android:layout_width="15dp"
                         android:layout_height="wrap_content" />
 
                     <TextView
+                        android:id="@+id/end-time-label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="End Time: "
+                        android:textSize="18sp"/>
+
+                    <TextView
                         android:id="@+id/job_end_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="end time"
-                        android:textSize="24sp" />
+                        android:textSize="18sp" />
                 </TableRow>
 
             </TableLayout>
@@ -110,6 +131,13 @@
                 android:text="username"
                 android:textAlignment="center"
                 android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/date_posted_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date Posted: "
+                android:textSize="24sp"/>
 
             <TextView
                 android:id="@+id/job_posted_view"
