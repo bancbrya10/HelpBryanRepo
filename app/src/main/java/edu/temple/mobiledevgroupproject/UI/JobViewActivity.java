@@ -183,7 +183,6 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
         dialogConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                thisUser.updateCurrentEnrolledJobs(jobToDisplay);
                 thisUser.updatePreviousJobs(jobToDisplay);
                 dialog.dismiss();
                 Toast.makeText(JobViewActivity.this, getResources().getString(R.string.job_added), Toast.LENGTH_LONG).show();
