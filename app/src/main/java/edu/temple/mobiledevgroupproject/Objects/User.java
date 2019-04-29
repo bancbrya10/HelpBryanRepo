@@ -41,6 +41,7 @@ public class User implements Parcelable {
     private String userName;
     private SimpleDate userBirthDay;
     private Record<Job> previousJobs;
+    private String password;
     private double userRating;
 
     public User() {
@@ -70,6 +71,15 @@ public class User implements Parcelable {
     public User setUserRating(double userRating) {
         this.userRating = userRating;
         return this;
+    }
+
+    public User setPassword(String password){
+        this.password = password;
+        return this;
+    }
+
+    public String getPassword(){
+        return password;
     }
 
     public String getName() {
