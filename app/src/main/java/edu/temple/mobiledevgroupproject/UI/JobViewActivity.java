@@ -1,27 +1,43 @@
 package edu.temple.mobiledevgroupproject.UI;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import edu.temple.mobiledevgroupproject.Objects.Comment;
+import edu.temple.mobiledevgroupproject.Objects.Constants;
 import edu.temple.mobiledevgroupproject.Objects.Job;
 import edu.temple.mobiledevgroupproject.Objects.Record;
+import edu.temple.mobiledevgroupproject.Objects.RequestHandler;
+import edu.temple.mobiledevgroupproject.Objects.SharedPrefManager;
 import edu.temple.mobiledevgroupproject.Objects.SimpleDate;
 import edu.temple.mobiledevgroupproject.Objects.SimpleTime;
 import edu.temple.mobiledevgroupproject.Objects.User;
@@ -44,6 +60,7 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
     TextView datePostedLabel;
     Button confirmButton;
     FrameLayout container;
+    ProgressDialog progressDialog;
 
     Job jobToDisplay;
     User thisUser;
@@ -73,6 +90,7 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
         endLabel = findViewById(R.id.end_time_label);
         startDateLabel = findViewById(R.id.start_date_label);
         datePostedLabel = findViewById(R.id.date_posted_label);
+        progressDialog = new ProgressDialog(this);
 
         if (jobToDisplay != null) {
             jobTitleView.setText(jobToDisplay.getJobTitle());
@@ -96,6 +114,9 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
             }
         });
 
+        getComments();
+
+        /*
         Comment testComment = new Comment("this is an example of a comment. This is the first example", thisUser, new SimpleDate(10, 2, 2015));
         Comment testComment2 = new Comment("this is an example of a comment. This is the second example", thisUser, new SimpleDate(10, 4, 2015));
         Comment testComment3 = new Comment("third example", thisUser, new SimpleDate(10, 4, 2017));
@@ -107,6 +128,7 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
         jobToDisplay.updateCommentList(testComment3);
         jobToDisplay.updateCommentList(testComment4);
         jobToDisplay.updateCommentList(testComment5);
+        */
 
         viewComments.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,5 +254,42 @@ public class JobViewActivity extends AppCompatActivity implements CommentFragmen
 
         timeStr = "" + hours + ":" + minutesStr;
         return timeStr;
+    }
+
+    private void getComments(){
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                Constants.GET_COMMENTS_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("CommentResponse", response);
+                        response = response.substring(1, response.length()-1);
+                        String[] commentArr = response.split(", ");
+                        Comment temp;
+                        for(int i = 0; i < commentArr.length; i++){
+                            Log.d("Comment", commentArr[i]);
+                            temp = new Comment(commentArr[i], thisUser, new SimpleDate("2019-04-29"));
+                            jobToDisplay.updateCommentList(temp);
+                        }
+                        progressDialog.hide();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progressDialog.hide();
+                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("jobTitle",jobToDisplay.getJobTitle());
+                return params;
+            }
+        };
+        RequestHandler.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);
     }
 }

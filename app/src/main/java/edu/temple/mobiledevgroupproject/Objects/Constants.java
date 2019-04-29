@@ -8,5 +8,6 @@ public class Constants {
     public static final String NEW_JOB_URL = ROOT_URL + "registerJob.php";
     public static final String GET_JOBS_URL = ROOT_URL + "getJobs.php";
     public static final String COMMENT_URL = ROOT_URL + "addComment.php";
+    public static final String GET_COMMENTS_URL = ROOT_URL + "getComments.php";
 
 }

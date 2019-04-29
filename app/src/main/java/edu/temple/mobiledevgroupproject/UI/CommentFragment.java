@@ -144,6 +144,7 @@ public class CommentFragment extends Fragment implements RecyclerViewItemClicked
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             Log.d("CommentResponse", jsonObject.toString());
+                            job.updateCommentList(new Comment(comment, user, new SimpleDate("2019-04-29")));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
