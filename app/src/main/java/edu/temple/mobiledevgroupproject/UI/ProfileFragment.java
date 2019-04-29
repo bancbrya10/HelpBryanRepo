@@ -30,7 +30,6 @@ public class ProfileFragment extends Fragment {
     private TextView nameView;
     private TextView ageView;
     private TextView ratingView;
-    private TextView currentlyEnrolledView;
     private TextView previouslyEnrolledView;
     private ImageView profileImgView;
     private Button logoutButton;
@@ -59,7 +58,6 @@ public class ProfileFragment extends Fragment {
         nameView = mView.findViewById(R.id.fullname_view);
         ageView = mView.findViewById(R.id.age_view);
         ratingView = mView.findViewById(R.id.rating_view);
-        currentlyEnrolledView = mView.findViewById(R.id.currently_enrolled_view);
         previouslyEnrolledView = mView.findViewById(R.id.past_enrolled_view);
         profileImgView = mView.findViewById(R.id.profile_img);
         logoutButton = mView.findViewById(R.id.logout_button);
@@ -72,7 +70,6 @@ public class ProfileFragment extends Fragment {
             ratingView.setText(String.valueOf(userToDisplay.getUserRating()));
 
             String opportunityString = getResources().getString(R.string.opportunities);
-            currentlyEnrolledView.setText(getJobCount(userToDisplay.getCurrentEnrolledJobs()) + " " + opportunityString);
             previouslyEnrolledView.setText(getJobCount(userToDisplay.getPreviousJobs()) + " " + opportunityString);
 
             String profImgString = User.fetchProfImg(getContext().getFilesDir());
