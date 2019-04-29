@@ -1,5 +1,4 @@
 <?php
-
 	class DbOperations{
 		
 		private $con;
@@ -20,7 +19,7 @@
 			}
 			else{
 				$password = md5($password);
-				$rating = 0.0;
+				$rating = 3.0;
 				$stmt = $this->con->stmt_init();
 				if($stmt = $this->con->prepare("INSERT INTO user (id,name,userName,password,birthday,rating) VALUES (NULL,?,?,?,?,?);")){				
 					$stmt->bind_param("ssssd",$name,$userName,$password,$birthday,$rating);
@@ -90,6 +89,17 @@
 			return $response;
 		}
 		
+		public function getComments($jobTitle){
+			$stmt = $this->con->stmt_init();
+			$stmt = $this->con->prepare("SELECT comments FROM job WHERE jobTitle = ?");
+			$stmt->bind_param("s",$jobTitle);
+			$stmt->execute();
+			$response = $stmt->get_result()->fetch_assoc();
+			
+			return $response;
+			
+		}
+		
 		public function addPostedJob($userName, $jobTitle){
 			$stmt = $this->con->stmt_init();
 			$stmt = $this->con->prepare("SELECT currentPostedJobs FROM user WHERE userName = ?");
@@ -113,22 +123,24 @@
 		}
 		
 		public function addComment($body, $jobTitle){
-			if(isJobExist($jobTitle){
-				$stmt = $this->con->stmt_init();
-				$stmt = $this->con->prepare("SELECT comments FROM job WHERE jobTitle = ?");
-				$stmt->bind_param("s", $jobTitle);
-				$stmt->execute();
-				$result = $stmt->get_result->fetch_assoc();
-				if(!$result){
-					$comments = $body;
+			if($this->isJobExist($jobTitle)){
+				$result = $this->getComments($jobTitle);
+				if(!$result['comments']){
+					$comments['comments'] = $body;
 				}
 				else{
-					$comments = $body.", ".$result;
+					$comments['comments'] = $body.", ".$result['comments'];
 				}
 				
-				if($stmt = $this->con->prepare("UPDATE job SET comments = ? WHERE jobTitle = ?"){
-					$stmt->bind_param("ss", $comments, $jobTitle);
-					return 1; //Success
+				$stmt = $this->con->stmt_init();
+				if($stmt = $this->con->prepare("UPDATE job SET comments = ? WHERE jobTitle = ?")){
+					$stmt->bind_param("ss", $comments['comments'], $jobTitle);
+					if($stmt->execute()){
+						return 1; //Success
+					}
+					else{
+						return 3;
+					}
 				}
 				else{
 					return 2; //Prepare statement error
@@ -141,7 +153,7 @@
 		}
 		
 		public function createJob($jobTitle, $jobDescription, $datePosted, $dateOfJob, $startTime, $endTime, $latitude, $longitude, $postedBy){
-			if($this->isJobExist($jobTitle,$dateOfJob)){
+			if($this->isJobExist($jobTitle)){
 				return 0;
 			}
 			else{
@@ -165,13 +177,12 @@
 			}
 		}
 		
-		private function isJobExist($jobTitle, $dateOfJob){
-			$stmt = $this->con->prepare("SELECT id FROM job WHERE jobTitle = ? AND dateOfJob = ? ");
-			$stmt->bind_param("ss", $jobTitle, $dateOfJob);
+		private function isJobExist($jobTitle){
+			$stmt = $this->con->prepare("SELECT id FROM job WHERE jobTitle = ?");
+			$stmt->bind_param("s", $jobTitle);
 			$stmt->execute();
 			$stmt->store_result();
 			return $stmt->num_rows > 0;
 		}
 	}
-
 ?>

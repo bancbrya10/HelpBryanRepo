@@ -1,8 +1,6 @@
 <?php
-
 	include('../includes/DbOperations.php');
 	$response = array();
-
 	if($_SERVER['REQUEST_METHOD']=='POST'){
 		
 		if(isset($_POST['body'])){
@@ -22,6 +20,10 @@
 				$response['error'] = true;
 				$response['message'] = "Job does not exist";
 			}
+			elseif($result == 3){
+				$response['error'] = true;
+				$response['message'] = "An error occurred";
+			}
 		}
 	}
 	else{
@@ -30,5 +32,4 @@
 	}
 	
 	echo json_encode($response);
-
 ?>

@@ -1,8 +1,6 @@
 <?php
-
 	include('../includes/DbOperations.php');
 	$response = array();
-
 	if($_SERVER['REQUEST_METHOD']=='POST'){
 		if(isset($_POST['userName']) and isset($_POST['password'])){
 			$db = new DbOperations();
@@ -15,7 +13,6 @@
 				$response['userName'] = $user['userName'];
 				$response['birthday'] = $user['birthday'];
 				$response['previousJobs'] = $user['previousJobs'];
-				$response['currentEnrolledJobs'] = $user['currentEnrolledJobs'];
 				$response['currentPostedJobs'] = $user['currentPostedJobs'];
 				$response['rating'] = $user['rating'];
 			}
@@ -35,5 +32,4 @@
 	}
 	
 	echo json_encode($response);
-
 ?>

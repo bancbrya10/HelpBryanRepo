@@ -1,8 +1,6 @@
 <?php
-
 	include('../includes/DbOperations.php');
 	$response = array();
-
 	if($_SERVER['REQUEST_METHOD']=='POST'){
 		
 		if(isset($_POST['name']) and
@@ -43,5 +41,4 @@
 	}
 	
 	echo json_encode($response);
-
 ?>
