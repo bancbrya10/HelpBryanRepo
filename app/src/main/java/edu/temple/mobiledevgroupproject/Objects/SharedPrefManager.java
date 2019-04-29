@@ -13,8 +13,6 @@ public class SharedPrefManager {
     private static final String KEY_USERNAME = "userName";
     private static final String KEY_BIRTHDAY= "birthday";
     private static final String KEY_PREVIOUS_JOBS = "previousJobs";
-    private static final String KEY_CURRENT_ENROLLED_JOBS = "currentEnrolledJobs";
-    private static final String KEY_CURRENT_POSTED_JOBS = "currentPostedJobs";
     private static final String KEY_RATING = "rating";
 
     private SharedPrefManager(Context context) {
@@ -29,8 +27,7 @@ public class SharedPrefManager {
     }
 
     public boolean userLogin(int id, String name, String userName, String birthday,
-                             String previousJobs, String currentEnrolledJobs,
-                             String currentPostedJobs, double rating){
+                             String previousJobs, double rating){
 
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -40,8 +37,6 @@ public class SharedPrefManager {
         editor.putString(KEY_USERNAME, userName);
         editor.putString(KEY_BIRTHDAY, birthday);
         editor.putString(KEY_PREVIOUS_JOBS, previousJobs);
-        editor.putString(KEY_CURRENT_ENROLLED_JOBS, currentEnrolledJobs);
-        editor.putString(KEY_CURRENT_POSTED_JOBS, currentPostedJobs);
         editor.putFloat(KEY_RATING, (float)rating);
 
         editor.apply();
@@ -85,16 +80,6 @@ public class SharedPrefManager {
     public String getPreviousJobs(){
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_PREVIOUS_JOBS, null);
-    }
-
-    public String getCurrentEnrolledJobs(){
-        SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(KEY_CURRENT_ENROLLED_JOBS, null);
-    }
-
-    public String getCurrentPostedJobs(){
-        SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(KEY_CURRENT_POSTED_JOBS, null);
     }
 
     public double getRating(){

@@ -104,8 +104,6 @@ public class SignUpFragment extends Fragment {
                                 .setUserName(userName)
                                 .setUserBirthDay(new SimpleDate(month, day, year))
                                 .setPreviousJobs(null)
-                                .setCurrentEnrolledJobs(null)
-                                .setCurrentPostedJobs(null)
                                 .setUserRating(User.DEFAULT_RATING);
                         registerUser(newUser);
 

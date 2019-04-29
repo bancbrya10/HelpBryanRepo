@@ -91,8 +91,6 @@ public class MainActivity extends AppCompatActivity implements JobListFragment.J
             thisUser.setUserName(SharedPrefManager.getInstance(this).getUserName());
             thisUser.setUserBirthDay(new SimpleDate(SharedPrefManager.getInstance(this).getBirthday()));
             thisUser.setPreviousJobs(new Record("Dummy Previous Job Record", "job"));
-            thisUser.setCurrentEnrolledJobs(new Record("Dummy Enrolled Job Record", "job"));
-            thisUser.setCurrentPostedJobs(new Record("Dummy Posted Job Record", "job"));
             thisUser.setUserRating(SharedPrefManager.getInstance(this).getRating());
 
             //Get the jobs from the database and set up nav menu

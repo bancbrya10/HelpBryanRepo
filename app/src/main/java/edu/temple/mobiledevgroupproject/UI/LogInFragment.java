@@ -165,7 +165,6 @@ public class LogInFragment extends Fragment {
                                 SharedPrefManager.getInstance(getContext()).userLogin(jsonObject.getInt("id"),
                                         jsonObject.getString("name"), jsonObject.getString("userName"),
                                         jsonObject.getString("birthday"), jsonObject.getString("previousJobs"),
-                                        jsonObject.getString("currentEnrolledJobs"), jsonObject.getString("currentPostedJobs"),
                                         jsonObject.getDouble("rating"));
                             }
                             else{

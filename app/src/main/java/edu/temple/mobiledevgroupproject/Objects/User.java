@@ -41,20 +41,11 @@ public class User implements Parcelable {
     private String userName;
     private SimpleDate userBirthDay;
     private Record<Job> previousJobs;
-    private Record<Job> currentEnrolledJobs;
-    private Record<Job> currentPostedJobs;
     private double userRating;
 
     public User() {
 
     }
-
-    //TODO create constructor
-    /*
-    public User(String name, String userName, String birthday, ){
-
-    }
-    */
 
     public User setName(String name) {
         this.name = name;
@@ -73,16 +64,6 @@ public class User implements Parcelable {
 
     public User setPreviousJobs(Record<Job> previousJobs) {
         this.previousJobs = previousJobs;
-        return this;
-    }
-
-    public User setCurrentEnrolledJobs(Record<Job> currentEnrolledJobs) {
-        this.currentEnrolledJobs = currentEnrolledJobs;
-        return this;
-    }
-
-    public User setCurrentPostedJobs(Record<Job> currentPostedJobs) {
-        this.currentPostedJobs = currentPostedJobs;
         return this;
     }
 
@@ -107,30 +88,8 @@ public class User implements Parcelable {
         return previousJobs;
     }
 
-    public Record<Job> getCurrentEnrolledJobs() {
-        return currentEnrolledJobs;
-    }
-
-    public Record<Job> getCurrentPostedJobs() {
-        return currentPostedJobs;
-    }
-
     public double getUserRating() {
         return userRating;
-    }
-
-    public void updateCurrentEnrolledJobs(Job newJob) {
-        if (currentEnrolledJobs == null) {
-            currentEnrolledJobs = new Record<>("CURRENTLY_ENROLLED_JOBS", Record.JOB_RECORD);
-        }
-        currentEnrolledJobs.addDataToRecord(newJob);
-    }
-
-    public void updateCurrentPostedJobs(Job newJob) {
-        if (currentPostedJobs == null) {
-            currentPostedJobs = new Record<>("CURRENT_POSTED_JOBS", Record.JOB_RECORD);
-        }
-        currentPostedJobs.addDataToRecord(newJob);
     }
 
     public void updatePreviousJobs(Job newJob) {
@@ -174,8 +133,6 @@ public class User implements Parcelable {
         userName = in.readString();
         userBirthDay = (SimpleDate) in.readValue(SimpleDate.class.getClassLoader());
         previousJobs = (Record<Job>) in.readValue(Record.class.getClassLoader());
-        currentEnrolledJobs = (Record<Job>) in.readValue(Record.class.getClassLoader());
-        currentPostedJobs = (Record<Job>) in.readValue(Record.class.getClassLoader());
         userRating = in.readDouble();
     }
 
@@ -190,8 +147,6 @@ public class User implements Parcelable {
         dest.writeString(userName);
         dest.writeValue(userBirthDay);
         dest.writeValue(previousJobs);
-        dest.writeValue(currentEnrolledJobs);
-        dest.writeValue(currentPostedJobs);
         dest.writeDouble(userRating);
     }
 
@@ -279,8 +234,6 @@ public class User implements Parcelable {
             jsonObject.put("name", userName);
             jsonObject.put("age", userBirthDay);
             jsonObject.put("rating", userRating);
-            jsonObject.put("posted_jobs", currentPostedJobs);
-            jsonObject.put("curr_jobs", currentEnrolledJobs);
             jsonObject.put("prev_jobs", previousJobs);
         } catch (JSONException e) {
             e.printStackTrace();
