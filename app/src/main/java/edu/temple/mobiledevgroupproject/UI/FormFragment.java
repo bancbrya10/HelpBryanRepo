@@ -8,6 +8,7 @@ package edu.temple.mobiledevgroupproject.UI;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.temple.mobiledevgroupproject.MainActivity;
 import edu.temple.mobiledevgroupproject.Objects.Comment;
 import edu.temple.mobiledevgroupproject.Objects.Constants;
 import edu.temple.mobiledevgroupproject.Objects.Job;
@@ -205,6 +207,7 @@ public class FormFragment extends Fragment {
                     formInterfaceListener.getDataFromForm(newJob, thisUser);
                     String toastString = getResources().getString(R.string.job_created);
                     Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getContext(), MainActivity.class));
                 } else {
                     String toastString = getResources().getString(R.string.invalid);
                     Toast.makeText(getContext(), toastString, Toast.LENGTH_SHORT).show();
@@ -379,6 +382,8 @@ public class FormFragment extends Fragment {
                 params.put("latitude",String.valueOf(job.getLocation().latitude));
                 params.put("longitude",String.valueOf(job.getLocation().longitude));
                 params.put("postedBy",job.getUser().getUserName());
+                Record comments = new Record("Comments", "Comment");
+                params.put("comments", comments.toJSONObject().toString());
                 return params;
             }
         };
