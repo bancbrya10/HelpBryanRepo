@@ -102,6 +102,7 @@ public class SignUpFragment extends Fragment {
                         User newUser = new User()
                                 .setName(name)
                                 .setUserName(userName)
+                                .setPassword(password)
                                 .setUserBirthDay(new SimpleDate(month, day, year))
                                 .setPreviousJobs(null)
                                 .setUserRating(User.DEFAULT_RATING);
@@ -158,7 +159,7 @@ public class SignUpFragment extends Fragment {
 
     //Post the data from the fields to the database
     private void registerUser(final User user){
-        progressDialog.setMessage("Registerig new user...");
+        progressDialog.setMessage("Registering new user...");
         progressDialog.show();
         final String birthday = "" + user.getUserBirthDay().getYear() + "-" + user.getUserBirthDay().getMonth()+ "-" + user.getUserBirthDay().getDay();
         StringRequest stringRequest = new StringRequest(Request.Method.POST,
@@ -187,6 +188,7 @@ public class SignUpFragment extends Fragment {
                 Map<String, String> params = new HashMap<>();
                 params.put("name",user.getName());
                 params.put("userName",user.getUserName());
+                params.put("password",user.getPassword());
                 params.put("birthday",birthday);
                 params.put("rating","" + user.getUserRating());
                 return params;
